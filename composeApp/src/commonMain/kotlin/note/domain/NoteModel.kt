@@ -5,3 +5,12 @@ data class NoteModel(
     val title: String,
     val description: String
 )
+{
+    companion object{
+        val empty = NoteModel(
+            id = "",
+            title = "",
+            description = ""
+        )
+    }
+}
