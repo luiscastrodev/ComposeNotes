@@ -38,7 +38,7 @@ object AddNoteScreen : Screen {
                     navigationIcon = {
                         IconButton(
                             onClick = {
-                                //navigator.pop()
+                                navigator.pop()
                             }
                         ) {
                             Icon(

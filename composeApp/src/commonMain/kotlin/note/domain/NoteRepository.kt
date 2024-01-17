@@ -10,6 +10,6 @@ interface NoteRepository {
 
     suspend fun getAll(): Result<List<NoteModel>>
 
-    suspend fun delete(): Result<Unit>
+    suspend fun delete(id: String): Result<Unit>
 
 }

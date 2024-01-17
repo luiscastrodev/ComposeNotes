@@ -1,24 +1,46 @@
 package home.ui
 
 import AddNoteScreen
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import note.di.NoteModule
 
 @OptIn(ExperimentalMaterial3Api::class)
 object HomeScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val viewModel = rememberScreenModel { HomeViewModel(NoteModule.noteRepository) }
+
+        val state by viewModel.state.collectAsState()
+
+        LaunchedEffect(Unit) {
+            viewModel.onEvent(HomeEvent.RefreshNote)
+        }
 
         Scaffold(
             topBar = {
@@ -34,7 +56,10 @@ object HomeScreen : Screen {
                                 navigator.push(AddNoteScreen)
                             }
                         ) {
-
+                            Icon(
+                                Icons.Filled.AddCircle,
+                                "Add new note",
+                                tint = Color.Black)
                         }
                     }
                 )
@@ -43,7 +68,18 @@ object HomeScreen : Screen {
                 .fillMaxSize()
                 .safeDrawingPadding()
         ) {
-
+            LazyColumn(
+                contentPadding = PaddingValues(20.dp),
+                modifier = Modifier.fillMaxSize().padding(it)
+            ) {
+                items(state.noteList, key = { it.id }) { note ->
+                    androidx.compose.material3.ListItem(
+                        headlineContent = {
+                            Text(note.title)
+                        }
+                    )
+                }
+            }
         }
     }
 }
